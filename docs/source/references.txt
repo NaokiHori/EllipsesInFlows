@@ -1,0 +1,10 @@
+.. |BREUGEM2012|   replace:: Breugem, *J. Comput. Phys.* (**231**), 2012
+.. |UHLMANN2005|   replace:: Uhlmann, *J. Comput. Phys.* (**209**), 2005
+.. |COSTA2015|     replace:: Costa et al., *Phys. Rev. E* (**92**), 2015
+.. |KAJISHIMA2002| replace:: Kajishima and Takiguchi, *Int. J. of Heat Fluid Flow* (**23-5**), 2002
+.. |PAN2002|       replace:: Pan and Glowinski, *J. Comput. Phys.* (**181**), 2002
+.. |TSUJI1993|     replace:: Tsuji, *KONA Powder and Particle J.* (**11**), 1993
+.. |FENG1994|      replace:: Feng et al., *J. Fluid Mech.* (**277**), 1994
+.. |XIAO2005|      replace:: Xiao et al., *Int. J. Numer. Method Fluid* (**48-9**), 2005
+.. |AIDUN1998|     replace:: Aidun et al., *J. Fluid Mech.* (**373**), 1998
+.. |CHEN2012|      replace:: Chen et al., *Phys. Fluids* (**24**), 2012

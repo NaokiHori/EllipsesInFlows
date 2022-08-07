@@ -1,0 +1,6 @@
+              ,:math:`0`,:math:`1`,  :math:`2`,   :math:`3`,:math:`\cdots`, :math:`N-2`, :math:`N-1`
+     :math:`0`,         ,:math:`0`,  :math:`1`,   :math:`2`,:math:`\cdots`, :math:`N-3`, :math:`N-2`
+     :math:`1`,         ,         ,:math:`N-1`,   :math:`N`,:math:`\cdots`,:math:`2N-5`,:math:`2N-4`
+     :math:`2`,         ,         ,           ,:math:`2N-3`,:math:`\cdots`,:math:`3N-8`,:math:`3N-7`
+:math:`\cdots`,         ,         ,           ,            ,:math:`\cdots`,            ,
+   :math:`N-1`,         ,         ,           ,            ,:math:`\cdots`,            ,:math:`\frac{N \left( N-1 \right)}{2}-1`

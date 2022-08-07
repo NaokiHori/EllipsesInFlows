@@ -1,0 +1,309 @@
+name: CI
+
+on:
+
+  push:
+    branches:
+      - main
+    paths:
+      - docs/**
+      - src/**
+      - include/**
+      - .github/workflows/ci.yml
+
+jobs:
+
+  build-and-simulate-1:
+    name: Build and run case 1 (Lateral migration in a shear flow)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        resolution: ["16", "32", "48"]
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && \
+          sudo apt-get -y install make libopenmpi-dev libfftw3-dev
+      - name: Install python and libs for pre-processing
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy matplotlib
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          repository: 'NaokiHori/EllipsesInFlows'
+          ref: 'main'
+      - name: Initialise particles (data will be stored under initparticles directory)
+        run: |
+          python3 docs/source/examples/case1/config/initparticles.py initparticles
+      - name: Change boundary condition and initial profile of streamwise velocity
+        run: |
+          mv docs/source/examples/case1/config/src_fluid_boundary_conditions.c src/fluid/boundary_conditions.c
+          mv docs/source/examples/case1/config/src_fluid_init.c src/fluid/init.c
+      - name: Compile
+        run: |
+          make all
+      - name: Create directories
+        run: |
+          make output
+      - name: Run case
+        run: |
+          sh docs/source/examples/case1/config/exec${{ matrix.resolution }}.sh
+      - name: Post-process results and save under artifacts directory
+        run: |
+          mkdir artifacts
+          python3 \
+            docs/source/examples/case1/data/visualise.py \
+            output/save
+          cp \
+            output/log/particle0000000000.dat \
+            artifacts/particle.dat
+          cp \
+            snapshot.png \
+            artifacts/snapshot.png
+      - name: Write metadata used in ci.rst
+        run: |
+          echo "OS   :" $(cat /etc/os-release | grep PRETTY_NAME | awk -F "=" '{print $2}') >> artifacts/ci.txt
+          echo "Date :" $(date) >> artifacts/ci.txt
+          echo "Hash :" $(git rev-parse HEAD) >> artifacts/ci.txt
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: LateralMigration${{ matrix.resolution }}
+          path: artifacts
+
+  build-and-simulate-2:
+    name: Build and run case 2 (Segre Silberberg effect)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        resolution: ["32", "64", "96"]
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && \
+          sudo apt-get -y install make libopenmpi-dev libfftw3-dev
+      - name: Install python and libs for pre- and post-processings
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy matplotlib
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          repository: 'NaokiHori/EllipsesInFlows'
+          ref: 'main'
+      - name: Initialise particles (data will be stored under initparticles directory)
+        run: |
+          python3 docs/source/examples/case2/config/initparticles.py initparticles
+      - name: Compile
+        run: |
+          make all
+      - name: Create directories
+        run: |
+          make output
+      - name: Run case
+        run: |
+          sh docs/source/examples/case2/config/exec${{ matrix.resolution }}.sh
+      - name: Post-process results and save under artifacts directory
+        run: |
+          mkdir artifacts
+          python3 \
+            docs/source/examples/case2/data/visualise.py \
+            output/save
+          python3 \
+            docs/source/examples/case2/data/convert.py \
+            output/log/particle0000000000.dat \
+            artifacts/particle.dat
+          cp \
+            snapshot.png \
+            artifacts/snapshot.png
+      - name: Write metadata used in ci.rst
+        run: |
+          echo "OS   :" $(cat /etc/os-release | grep PRETTY_NAME | awk -F "=" '{print $2}') >> artifacts/ci.txt
+          echo "Date :" $(date) >> artifacts/ci.txt
+          echo "Hash :" $(git rev-parse HEAD) >> artifacts/ci.txt
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: SegreSilberberg${{ matrix.resolution }}
+          path: artifacts
+
+  build-and-simulate-3:
+    name: Build and run case 3 (Rotation of an ellipse)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        resolution: ["48", "64", "96"]
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && \
+          sudo apt-get -y install make libopenmpi-dev libfftw3-dev
+      - name: Install python and libs for pre-processing
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy matplotlib
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          repository: 'NaokiHori/EllipsesInFlows'
+          ref: 'main'
+      - name: Initialise particles (data will be stored under initparticles directory)
+        run: |
+          python3 docs/source/examples/case3/config/initparticles.py initparticles
+      - name: Change boundary condition and initial profile of streamwise velocity
+        run: |
+          mv docs/source/examples/case3/config/src_fluid_boundary_conditions.c src/fluid/boundary_conditions.c
+          mv docs/source/examples/case3/config/src_fluid_init.c src/fluid/init.c
+      - name: Compile
+        run: |
+          make all
+      - name: Create directories
+        run: |
+          make output
+      - name: Run case
+        run: |
+          sh docs/source/examples/case3/config/exec${{ matrix.resolution }}.sh
+      - name: Post-process results and save under artifacts directory
+        run: |
+          mkdir artifacts
+          python3 \
+            docs/source/examples/case3/data/visualise.py \
+            output/save
+          cp \
+            output/log/particle0000000000.dat \
+            artifacts/particle.dat
+          cp \
+            snapshot.png \
+            artifacts/snapshot.png
+      - name: Write metadata used in ci.rst
+        run: |
+          echo "OS   :" $(cat /etc/os-release | grep PRETTY_NAME | awk -F "=" '{print $2}') >> artifacts/ci.txt
+          echo "Date :" $(date) >> artifacts/ci.txt
+          echo "Hash :" $(git rev-parse HEAD) >> artifacts/ci.txt
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: RotatingEllipse${{ matrix.resolution }}
+          path: artifacts
+
+  build-and-deploy-doc:
+    name: Build and deploy documentation
+    needs: [build-and-simulate-1, build-and-simulate-2, build-and-simulate-3]
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: "pages"
+      cancel-in-progress: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && \
+          sudo apt-get -y install gnuplot ghostscript imagemagick
+      - name: Edit ghostscript config
+        run: |
+          sudo sed -i 's/rights="none"/rights="read|write"/g' /etc/ImageMagick-6/policy.xml
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          repository: 'NaokiHori/EllipsesInFlows'
+          ref: 'main'
+      - name: Download LateralMigration16
+        uses: actions/download-artifact@v3
+        with:
+          name: LateralMigration16
+          path: docs/source/examples/case1/data/16
+      - name: Download LateralMigration32
+        uses: actions/download-artifact@v3
+        with:
+          name: LateralMigration32
+          path: docs/source/examples/case1/data/32
+      - name: Download LateralMigration48
+        uses: actions/download-artifact@v3
+        with:
+          name: LateralMigration48
+          path: docs/source/examples/case1/data/48
+      - name: Download SegreSilberberg032
+        uses: actions/download-artifact@v3
+        with:
+          name: SegreSilberberg32
+          path: docs/source/examples/case2/data/32
+      - name: Download SegreSilberberg064
+        uses: actions/download-artifact@v3
+        with:
+          name: SegreSilberberg64
+          path: docs/source/examples/case2/data/64
+      - name: Download SegreSilberberg96
+        uses: actions/download-artifact@v3
+        with:
+          name: SegreSilberberg96
+          path: docs/source/examples/case2/data/96
+      - name: Download RotatingEllipse48
+        uses: actions/download-artifact@v3
+        with:
+          name: RotatingEllipse48
+          path: docs/source/examples/case3/data/48
+      - name: Download RotatingEllipse64
+        uses: actions/download-artifact@v3
+        with:
+          name: RotatingEllipse64
+          path: docs/source/examples/case3/data/64
+      - name: Download RotatingEllipse96
+        uses: actions/download-artifact@v3
+        with:
+          name: RotatingEllipse96
+          path: docs/source/examples/case3/data/96
+      - name: Create eps and tex files
+        run: |
+          cd docs
+          cp create_figures/gnuplot.sh .
+          bash gnuplot.sh
+      - name: Convert eps to pdf
+        run: |
+          cd docs
+          cp create_figures/epstopdf.sh .
+          docker run \
+            --rm \
+            --volume ${PWD}:/project \
+            --workdir /project \
+            naokihori/texlive:gnuplot-epslatex \
+            /bin/sh epstopdf.sh
+      - name: Compile tex files
+        run: |
+          cd docs
+          cp create_figures/pdflatex.sh .
+          docker run \
+            --rm \
+            --volume ${PWD}:/project \
+            --workdir /project \
+            naokihori/texlive:gnuplot-epslatex \
+            /bin/sh pdflatex.sh
+      - name: Convert pdf to png
+        run: |
+          cd docs
+          sh create_figures/pdf-to-png.sh
+      - name: Build documentation using Sphinx
+        run: |
+          echo "cd docs && make html" > sphinx.sh
+          docker run \
+            --rm \
+            --volume ${PWD}:/project \
+            --workdir /project \
+            sphinxdoc/sphinx:5.0.1 \
+            /bin/bash sphinx.sh
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v1
+      - name: Upload HTML
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: docs/build/html
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@main
+
