@@ -29,7 +29,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install numpy matplotlib
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@main
         with:
           repository: 'NaokiHori/EllipsesInFlows'
           ref: 'main'
@@ -67,7 +67,7 @@ jobs:
           echo "Date :" $(date) >> artifacts/ci.txt
           echo "Hash :" $(git rev-parse HEAD) >> artifacts/ci.txt
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@main
         with:
           name: LateralMigration${{ matrix.resolution }}
           path: artifacts
@@ -88,7 +88,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install numpy matplotlib
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@main
         with:
           repository: 'NaokiHori/EllipsesInFlows'
           ref: 'main'
@@ -123,7 +123,7 @@ jobs:
           echo "Date :" $(date) >> artifacts/ci.txt
           echo "Hash :" $(git rev-parse HEAD) >> artifacts/ci.txt
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@main
         with:
           name: SegreSilberberg${{ matrix.resolution }}
           path: artifacts
@@ -144,7 +144,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install numpy matplotlib
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@main
         with:
           repository: 'NaokiHori/EllipsesInFlows'
           ref: 'main'
@@ -182,7 +182,7 @@ jobs:
           echo "Date :" $(date) >> artifacts/ci.txt
           echo "Hash :" $(git rev-parse HEAD) >> artifacts/ci.txt
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@main
         with:
           name: RotatingEllipse${{ matrix.resolution }}
           path: artifacts
@@ -205,60 +205,65 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update && \
-          sudo apt-get -y install gnuplot ghostscript imagemagick
+          sudo apt-get -y install make gnuplot ghostscript imagemagick
       - name: Edit ghostscript config
         run: |
           sudo sed -i 's/rights="none"/rights="read|write"/g' /etc/ImageMagick-6/policy.xml
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@main
         with:
           repository: 'NaokiHori/EllipsesInFlows'
           ref: 'main'
       - name: Download LateralMigration16
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@main
         with:
           name: LateralMigration16
           path: docs/source/examples/case1/data/16
       - name: Download LateralMigration32
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@main
         with:
           name: LateralMigration32
           path: docs/source/examples/case1/data/32
       - name: Download LateralMigration48
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@main
         with:
           name: LateralMigration48
           path: docs/source/examples/case1/data/48
       - name: Download SegreSilberberg032
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@main
         with:
           name: SegreSilberberg32
           path: docs/source/examples/case2/data/32
       - name: Download SegreSilberberg064
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@main
         with:
           name: SegreSilberberg64
           path: docs/source/examples/case2/data/64
       - name: Download SegreSilberberg96
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@main
         with:
           name: SegreSilberberg96
           path: docs/source/examples/case2/data/96
       - name: Download RotatingEllipse48
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@main
         with:
           name: RotatingEllipse48
           path: docs/source/examples/case3/data/48
       - name: Download RotatingEllipse64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@main
         with:
           name: RotatingEllipse64
           path: docs/source/examples/case3/data/64
       - name: Download RotatingEllipse96
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@main
         with:
           name: RotatingEllipse96
           path: docs/source/examples/case3/data/96
+      - name: Run collision scripts
+        run: |
+          cd docs/source/collision/data
+          make all
+          ./a.out
       - name: Create eps and tex files
         run: |
           cd docs
@@ -298,9 +303,9 @@ jobs:
             sphinxdoc/sphinx:5.0.1 \
             /bin/bash sphinx.sh
       - name: Setup GitHub Pages
-        uses: actions/configure-pages@v1
+        uses: actions/configure-pages@main
       - name: Upload HTML
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@main
         with:
           path: docs/build/html
       - name: Deploy to GitHub Pages

@@ -2,10 +2,6 @@
 Documentation
 #############
 
-.. note::
-
-   This library is still under development.
-
 .. image:: snapshot.png
    :width: 800
 
@@ -15,6 +11,7 @@ Documentation
    introduction
    governing_equations/main
    numerical_method/main
+   collision/main
    implementation/main
    examples/index
    references
